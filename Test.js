@@ -8,12 +8,18 @@ let ready = [
 
 console.log("Mont Capoy's Preemptive Algorithms");
 console.log("Round Robin: ");
-let robin = [...ready];
+let robin = JSON.parse(JSON.stringify(ready));
 round(robin);
 console.log(robin)
 
 function display(P){
     P.sort((a, b) => a.arrT - b.arrT);
+}
+
+function retBurst(P){
+    for(let x=0; x < ready.length;x++){
+        P[x].burT = ready[x].burT;
+    }
 }
 
 function round(P) {
@@ -48,7 +54,7 @@ function round(P) {
 
         // Executing the current process
         for (x = 0; P[n].burT != 0 && x < quant; x++, time++) {
-            P[n].comT++;
+            P[n].burT--;
 
             // Update waiting time for other ready processes
             for (y = 0; y < LIM; y++) {
@@ -58,7 +64,8 @@ function round(P) {
             }
 
             // If process completes during this quantum
-            if (P[n].comT == P[n].burT) {
+            if (P[n].burT == 0) {
+                P[n].comT = time + 1; // Completion time
                 log[n] = true;
             }
         }
@@ -70,5 +77,7 @@ function round(P) {
             log[LIM] = true;
         }
     }
+
+    retBurst(P);
 }
 
