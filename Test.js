@@ -7,19 +7,20 @@ let ready = [
 ];
 
 console.log("Mont Capoy's Preemptive Algorithms");
-console.log("Round Robin: ");
-let robin = JSON.parse(JSON.stringify(ready));
-round(robin);
+// let robin = JSON.parse(JSON.stringify(ready));
+//round(JSON.parse(JSON.stringify(ready)));
+//round(JSON.parse(JSON.stringify(ready)));
 
 function display(P){
     P.sort((a, b) => a.arrT - b.arrT);
-    console.log(robin);
+    let output = [], temp;
     
     let x, LIM = P.length;
-    console.log("Process Arrival Burst\t");
     for(x = 0; x < LIM; x++){
-        console.log(`Process ${P[x].id}`);
+        temp = {Process: P[x].id, Arrival: P[x].arrT, Burst: P[x].burT, Completion: P[x].comT, Wait: P[x].waiT, Turnaround: P[x].comT - P[x].arrT};
+        output.push(temp);
     }
+    console.table(output);
 }
 
 function retBurst(P){
@@ -29,6 +30,8 @@ function retBurst(P){
 }
 
 function round(P) {
+    console.log("Round Robin: ");
+
     const LIM = P.length;
     const quant = 4; // Quantum time slice
 
@@ -95,3 +98,71 @@ function round(P) {
     display(P);
 }
 
+function priority(P){
+    const LIM = P.length;
+
+    let log = Array(LIM + 1).fill(false); 
+    let time = 0; 
+    let x, y, n; 
+
+    let timeStr = "0    ", idStr = "", temp = "";
+
+    for (n=-1; !log[LIM];) {
+        // Find the next process to execute
+        let found = false;
+        //console.log("-----");
+
+        for (x = 0, y = 99; x < LIM; x++) {
+            if (P[x].burT > 0 && P[x].arrT - 1 <= time) {
+                if(P[x].prio < y){
+                    y = P[x].prio;
+                    found = true;
+                }
+            }
+        }
+
+        // If no process is ready
+        if (!found) {
+            time++;
+            console.log("Wait");
+            continue;
+        }
+        n = y;
+        found = false;
+
+        // Executing the current process
+        for (x = 0; x < P[n]; x++, time++) {
+            P[n].burT--;
+
+            // Update waiting time for other ready processes
+            for (y = 0; found == false && y < LIM; y++) {
+                if (y != n && P[y].arrT <= time && P[y].burT > 0) {
+                    P[y].waiT++;
+                    if(P[x].prio > P[y].prio){
+                        found = true;
+                    } 
+                }
+            }
+
+            // If process completes during this quantum
+            if (P[n].burT == 0) {
+                P[n].comT = time + 1; // Completion time
+                log[n] = true;
+            }
+        }
+
+        console.log(`${P[n].id}: ${time}`);
+        // temp = time.toString().padEnd(5, " ");
+        // timeStr += temp;
+        // temp = P[n].id.padEnd(5, " ")
+        // idStr += temp;
+        // Check if all processes are done
+        if (log.slice(0, LIM).every(Boolean)) {
+            log[LIM] = true;
+        }
+    }
+
+    console.log(timeStr);
+    console.log(idStr);
+    display(P);
+}
