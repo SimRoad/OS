@@ -10,8 +10,8 @@ display(ready);
 
 console.log("Mont Capoy's Preemptive Algorithms");
 round(JSON.parse(JSON.stringify(ready)));
-// priority(JSON.parse(JSON.stringify(ready)));
-// srtf(JSON.parse(JSON.stringify(ready)));
+priority(JSON.parse(JSON.stringify(ready)));
+srtf(JSON.parse(JSON.stringify(ready)));
 
 function display(P){
     P.sort((a, b) => a.arrT - b.arrT);
@@ -57,7 +57,7 @@ function round(P) {
         for (x = 0, y = n + 1; x < LIM; x++) {
             y = (n + 1 + x) % LIM; // Round-robin search
             //console.log(y);
-            if (P[y].burT > 0 && P[y].arrT - 1 <= time) {
+            if (P[y].burT > 0 && P[y].arrT <= time) {
                 n = y;
                 found = true;
                 break;
