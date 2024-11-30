@@ -6,21 +6,28 @@ let ready = [
     { id: 'E', arrT: 20, burT: 5, prio: 2, waiT: 0, comT: 0},
 ];
 
+display(ready);
+
 console.log("Mont Capoy's Preemptive Algorithms");
-// let robin = JSON.parse(JSON.stringify(ready));
 round(JSON.parse(JSON.stringify(ready)));
-priority(JSON.parse(JSON.stringify(ready)));
+// priority(JSON.parse(JSON.stringify(ready)));
+// srtf(JSON.parse(JSON.stringify(ready)));
 
 function display(P){
     P.sort((a, b) => a.arrT - b.arrT);
-    let output = [], temp;
+    let output = [], temp, tAt = 0, wait = 0;
     
     let x, LIM = P.length;
     for(x = 0; x < LIM; x++){
         temp = {Process: P[x].id, Arrival: P[x].arrT, Burst: P[x].burT, Completion: P[x].comT, Wait: P[x].waiT, Turnaround: P[x].comT - P[x].arrT};
+        tAt += temp.Turnaround;
+        wait += temp.Wait;
         output.push(temp);
     }
     console.table(output);
+
+    tAt /= LIM; wait /= LIM;
+    console.log("Avg Turnaround: " + tAt + "\nAvg Wait: " + wait);
     console.log(" ");
 }
 
@@ -177,7 +184,7 @@ function priority(P){
 }
 
 function srtf(P){
-    console.log("Preemptive Priority: ");
+    console.log("Shortest Remaining Time First: ");
     const LIM = P.length;
 
     let log = Array(LIM + 1).fill(false); 
@@ -193,8 +200,8 @@ function srtf(P){
 
         for (x = 0, y = 99; x < LIM; x++) {
             if (P[x].arrT <= time && P[x].burT > 0 ) {
-                if(P[x].prio < y){
-                    y = P[x].prio;
+                if(P[x].burT < y){
+                    y = P[x].burT;
                     n = x;
                     //console.log(n);
                     found = true;
@@ -218,7 +225,7 @@ function srtf(P){
             for (y = 0;y < LIM; y++) {
                 if (y != n && P[y].arrT <= time && P[y].burT > 0) {
                     P[y].waiT++;
-                    if(P[n].prio >= P[y].prio){
+                    if(P[n].burT >= P[y].burT){
                         //console.log(P[y].id + ": " + time);
                         found = true;
                     } 
