@@ -10,10 +10,16 @@ console.log("Mont Capoy's Preemptive Algorithms");
 console.log("Round Robin: ");
 let robin = JSON.parse(JSON.stringify(ready));
 round(robin);
-console.log(robin)
 
 function display(P){
     P.sort((a, b) => a.arrT - b.arrT);
+    console.log(robin);
+    
+    let x, LIM = P.length;
+    console.log("Process Arrival Burst\t");
+    for(x = 0; x < LIM; x++){
+        console.log(`Process ${P[x].id}`);
+    }
 }
 
 function retBurst(P){
@@ -29,6 +35,8 @@ function round(P) {
     let log = Array(LIM + 1).fill(false); 
     let time = 0; 
     let x, y, n; 
+
+    let timeStr = "0    ", idStr = "", temp = "";
 
     for (n=-1; !log[LIM];) {
         // Find the next process to execute
@@ -70,14 +78,20 @@ function round(P) {
             }
         }
 
-        console.log(`${P[n].id}: ${time}`);
-
+        //console.log(`${P[n].id}: ${time}`);
+        temp = time.toString().padEnd(5, " ");
+        timeStr += temp;
+        temp = P[n].id.padEnd(5, " ")
+        idStr += temp;
         // Check if all processes are done
         if (log.slice(0, LIM).every(Boolean)) {
             log[LIM] = true;
         }
     }
 
+    console.log(timeStr);
+    console.log(idStr);
     retBurst(P);
+    display(P);
 }
 
