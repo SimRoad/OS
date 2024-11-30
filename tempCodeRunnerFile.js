@@ -1,1 +1,1 @@
-timeStr = 
+P[n].burT--;
