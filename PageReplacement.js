@@ -139,7 +139,7 @@ function Optimal(P){
             log[ndx][x] = P[x];
             log[FRAMES][x] = 'F';
         }
-        console.log(log[FRAMES][log[FRAMES].length - 1] + ": "+ nextArr);
+        //console.log(log[FRAMES][log[FRAMES].length - 1] + ": "+ nextArr);
         
         for(y=x+1; y<LIM && P[y] != P[x]; y++){}
         nextArr[ndx] = y; //so even if y = LIM, then the number doesn't exist anymore
@@ -159,3 +159,4 @@ function Optimal(P){
     //console.log(log)
     display(P, log);
 }
+
