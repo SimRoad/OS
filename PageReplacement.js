@@ -1,10 +1,15 @@
+const FRAMES = 3;
+
 let pages = [7,0,1,2,0,3,0,4,2,3,0,3,1,2,0];
 console.log(pages);
 
 console.log("Mont Capoy's Page Replacement Algorithms");
 
-// FIFO(JSON.parse(JSON.stringify(pages)));
-LRU(JSON.parse(JSON.stringify(pages)));
+// FIFO(JSON.parse(pages);
+// LRU(JSON.parse(pages);
+
+let pages2 = [7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7];
+Optimal(pages2);
 
 function display(P, F){
     const LIM = P.length;
@@ -32,7 +37,6 @@ function display(P, F){
 function FIFO(P){
     console.log("\nFirst in, First out: ");
     const LIM = P.length;
-    const FRAMES = 3;
 
     let F = Array(FRAMES).fill(-1);
     let log = Array(FRAMES).fill(null).map(() => [-1]);
@@ -70,7 +74,6 @@ function FIFO(P){
 function LRU(P){
     console.log("\nLeast Recently Used: ");
     const LIM = P.length;
-    const FRAMES = 3;
 
     let F = Array(FRAMES).fill(-1);
     let log = Array(FRAMES).fill(null).map(() => [-1]);
@@ -114,40 +117,34 @@ function LRU(P){
     display(P, log);
 }
 
-function LRU(P){
-    console.log("\nLeast Recently Used: ");
+function Optimal(P){
+    console.log("\nOptimal: ");
     const LIM = P.length;
-    const FRAMES = 3;
 
     let F = Array(FRAMES).fill(-1);
     let log = Array(FRAMES).fill(null).map(() => [-1]);
-    let nextArr = Array(FRAMES).fill(-1);
+    let nextArr = Array(FRAMES).fill(99);
     log.push([]);
     let x, y;
-    let ndx, nextNdx, hits = 0, faults = 0;
-
-    for(x=0,y=FRAMES; x < FRAMES; x++, y--){
-        nextArr[x] = y;
-    }
+    let ndx, hits = 0, faults = 0;
 
     for(x = 0; x < LIM; x++){
         log[FRAMES].push('H');
         if(F.includes(P[x])){
             hits++;
             ndx = F.indexOf(P[x]);
-            nextArr[ndx] = -1;
         } else {
             ndx = nextArr.indexOf(Math.max(...nextArr));
             F[ndx] = P[x];
             log[ndx][x] = P[x];
             log[FRAMES][x] = 'F';
         }
+        console.log(log[FRAMES][log[FRAMES].length - 1] + ": "+ nextArr);
         
         for(y=x+1; y<LIM && P[y] != P[x]; y++){}
         nextArr[ndx] = y; //so even if y = LIM, then the number doesn't exist anymore
 
         for(y=0; y < FRAMES; y++){
-            nextArr[y]++;
             log[y].push(log[y][x]);
         }
     }
