@@ -1,12 +1,11 @@
-const FRAMES = 3;
-
 let pages = [7,0,1,2,0,3,0,4,2,3,0,3,1,2,0];
+const FRAMES = 3;
 console.log(pages);
 
 console.log("Mont Capoy's Page Replacement Algorithms");
 
-// FIFO(JSON.parse(pages);
-// LRU(JSON.parse(pages);
+FIFO(pages);
+LRU(pages);
 
 let pages2 = [7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7];
 Optimal(pages2);
