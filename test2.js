@@ -1,24 +1,49 @@
-const posArr = [64, 11, 14, 69, 12, 59, 85, 5];
-const PREV = 17;
-const TRACK = 100;
-// const posArr = [256, 46, 56,276,48,236,338,112];
-// const PREV = 68;
-// const TRACK = 400;
-const SEEK_RATE = 5;
-const ALPHA = 20;
+const readline = require('readline');
 
-console.log(posArr);
-console.log(`Track size: ${TRACK} \tPrevious Node: ${PREV} \t Current Node: ${posArr[0]}`);
-console.log(`Seek rate: ${SEEK_RATE} \tAlpha: ${ALPHA}`);
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-let headMovement = (a, b) => a > b ? a - b : b - a;
-let isSmaller = (a, b) => a > b ? b : a;
+// Helper function for inputs
+const getInput = (query) => new Promise((resolve) => rl.question(query, resolve));
 
-console.log("Mont Capoy's Disk Scheduling Algorithms");
+(async () => {
+    try {
+        // Gather inputs
+        const posArrInput = await getInput("Enter positions as a comma-separated list (e.g., 64,11,14,...): ");
+        const PREV = parseInt(await getInput("Enter the previous track position: "), 10);
+        const TRACK = parseInt(await getInput("Enter the total number of tracks: "), 10);
+        const SEEK_RATE = parseInt(await getInput("Enter the total number of tracks: "), 10);
+        const ALPHA = parseInt(await getInput("Enter the total number of tracks: "), 10);
 
-FCFS(posArr);
-cScan(posArr);
-cLook(posArr);
+
+        // Convert `posArrInput` into an array of numbers
+        const posArr = posArrInput.split(",").map(Number);
+
+        // Now, your constants are set dynamically
+        console.log("\nInputs:");
+        console.log("Positions Array:", posArr);
+        console.log("Previous Track Position:", PREV);
+        console.log("Total Tracks:", TRACK);
+        console.log("\nRunning your code...\n");
+
+        let headMovement = (a, b) => a > b ? a - b : b - a;
+        let isSmaller = (a, b) => a > b ? b : a;
+
+        console.log("Mont Capoy's Disk Scheduling Algorithms");
+
+        FCFS(posArr);
+        cScan(posArr, TRACK, PREV);
+        cLook(posArr, TRACK, PREV);
+
+        // Close the readline interface
+        rl.close();
+    } catch (err) {
+        console.error("An error occurred:", err);
+        rl.close();
+    }
+})();
 
 function FCFS(P){
     console.log("First Come, First Serve");
@@ -97,7 +122,7 @@ function cScan(Arr){
     THM += 20;
 
     console.log("Total Head Movement: " + THM);
-    console.log("Seek Time: " + THM * 5);
+    console.log("Seek Time: " + THM * SEEK_RATE);
     console.log("\n\n");
 }
 
@@ -142,6 +167,6 @@ function cLook(Arr){
     THM += 20;
 
     console.log("Total Head Movement: " + THM);
-    console.log("Seek Time: " + THM * 5);
+    console.log("Seek Time: " + THM * SEEK_RATE);
     console.log("\n\n");
 }
