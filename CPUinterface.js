@@ -16,8 +16,7 @@ const rl = readline.createInterface({
 let count = 0;
 
 // Recursive function to collect process data
-console.log("Enter the times for Arrival and Burst & Priority # separated by spaces: ");
-console.log("(Arrival, Burst, Priority): 5 10 1\n");
+
 async function getProcessDetails(numProcesses) {
     let input = await rl.question(
         `Process ${count + 1}: `,
@@ -37,7 +36,7 @@ async function getProcessDetails(numProcesses) {
 
     // If all processes are entered, run algorithms
     if (count < numProcesses) {
-        await getProcessDetails();
+        await getProcessDetails(numProcesses);
     } else {
         interface(ready);
     }
@@ -47,7 +46,9 @@ let ready = [];
 console.clear();
 rl.question('Enter the number of processes: ').then(numProcesses=>{
     numProcesses = parseInt(numProcesses); // Convert input to a number
-    
+
+    console.log("Enter the times for Arrival and Burst & Priority # separated by spaces: ");
+    console.log("(Arrival, Burst, Priority): 5 10 1\n");
     getProcessDetails(numProcesses); // Start collecting process details
 })
 
@@ -92,30 +93,6 @@ async function interface(P) {
     if (option !== 9) {
         await interface(P);
     }
-}
-
-function askQuestion(query) {
-    return new Promise(async (resolve) => {
-        await rl.question(query, (answer) => {
-            resolve(answer);
-        });
-    });
-}
-
-async function deleteProcess() {
-    let answer = await rl.question('Do you want to delete a process (Y/N)? ');
-    if (answer.toUpperCase() === 'Y') {
-        let id = await rl.question('Enter the ID of the process to delete (A, B, C, etc.): ');
-        const index = ready.findIndex(p => p.id === id.toLocaleUpperCase);
-        if (index !== -1) {
-            ready.splice(index, 1);
-            console.log(`Process ${id} has been deleted.`);
-            display(ready); // Show updated queue after deletion
-        } else {
-            console.log('Process not found.');
-            id();
-        }
-    } 
 }
 
 function display(P){
