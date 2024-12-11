@@ -6,52 +6,50 @@
 //     { id: 'E', arrT: 20, burT: 5, prio: 2, waiT: 0, comT: 0},
 // ];
 
-const readline = require('readline');
+const readline = require('readline/promises');
 
 // Initialize readline interface
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
+let count = 0;
+
+// Recursive function to collect process data
+console.log("Enter the times for Arrival and Burst & Priority # separated by spaces: ");
+console.log("(Arrival, Burst, Priority): 5 10 1\n");
+async function getProcessDetails(numProcesses) {
+    let input = await rl.question(
+        `Process ${count + 1}: `,
+    );
+    const [arrT, burT, prio] = input.split(' ');
+
+    ready.push({
+        id: String.fromCharCode(65 + count), // Assign IDs as A, B, C, ...
+        arrT: parseInt(arrT),
+        burT: parseInt(burT),
+        prio: parseInt(prio),
+        waiT: 0,
+        comT: 0,
+    });
+
+    count++;
+
+    // If all processes are entered, run algorithms
+    if (count < numProcesses) {
+        await getProcessDetails();
+    } else {
+        interface(ready);
+    }
+}
 
 let ready = [];
 console.clear();
-rl.question('Enter the number of processes: ', (numProcesses) => {
+rl.question('Enter the number of processes: ').then(numProcesses=>{
     numProcesses = parseInt(numProcesses); // Convert input to a number
-    let count = 0;
-
-    // Recursive function to collect process data
-    console.log("Enter the times for Arrival and Burst & Priority # separated by spaces: ");
-    console.log("(Arrival, Burst, Priority): 5 10 1\n");
-    function getProcessDetails() {
-        rl.question(
-            `Process ${count + 1}: `,
-            (input) => {
-                const [arrT, burT, prio] = input.split(' ');
-
-                ready.push({
-                    id: String.fromCharCode(65 + count), // Assign IDs as A, B, C, ...
-                    arrT: parseInt(arrT),
-                    burT: parseInt(burT),
-                    prio: parseInt(prio),
-                    waiT: 0,
-                    comT: 0,
-                });
-
-                count++;
-
-                // If all processes are entered, run algorithms
-                if (count < numProcesses) {
-                    getProcessDetails();
-                } else {
-                    interface(ready);
-                }
-            }
-        );
-    }
-
-    getProcessDetails(); // Start collecting process details
-});
+    
+    getProcessDetails(numProcesses); // Start collecting process details
+})
 
 
 async function interface(P) {
@@ -65,7 +63,7 @@ async function interface(P) {
     console.log("[4]: ALL");
     console.log("[9]: End");
 
-    const option = parseInt(await askQuestion("Enter option: "));
+    const option = parseInt(await rl.question("Enter option: "));
 
     switch (option) {
         case 1: 
@@ -97,29 +95,27 @@ async function interface(P) {
 }
 
 function askQuestion(query) {
-    return new Promise((resolve) => {
-        rl.question(query, (answer) => {
+    return new Promise(async (resolve) => {
+        await rl.question(query, (answer) => {
             resolve(answer);
         });
     });
 }
 
-function deleteProcess() {
-    rl.question('Do you want to delete a process (Y/N)? ', (answer) => {
-        if (answer.toUpperCase() === 'Y') {
-            rl.question('Enter the ID of the process to delete (A, B, C, etc.): ', (id) => {
-                const index = ready.findIndex(p => p.id === id.toLocaleUpperCase);
-                if (index !== -1) {
-                    ready.splice(index, 1);
-                    console.log(`Process ${id} has been deleted.`);
-                    display(ready); // Show updated queue after deletion
-                } else {
-                    console.log('Process not found.');
-                    id();
-                }
-            });
-        } 
-    });
+async function deleteProcess() {
+    let answer = await rl.question('Do you want to delete a process (Y/N)? ');
+    if (answer.toUpperCase() === 'Y') {
+        let id = await rl.question('Enter the ID of the process to delete (A, B, C, etc.): ');
+        const index = ready.findIndex(p => p.id === id.toLocaleUpperCase);
+        if (index !== -1) {
+            ready.splice(index, 1);
+            console.log(`Process ${id} has been deleted.`);
+            display(ready); // Show updated queue after deletion
+        } else {
+            console.log('Process not found.');
+            id();
+        }
+    } 
 }
 
 function display(P){
@@ -150,7 +146,7 @@ async function round(P) {
     console.log("\n\n\nRound Robin:");
 
     // Wait for user input
-    const quant = parseInt(await askQuestion("How long is the quant (seconds): "));
+    const quant = parseInt(await rl.question("How long is the quant (seconds): "));
     console.log(`The quant is: ${quant}`);
 
     // Execute Round Robin logic
@@ -167,10 +163,8 @@ function executeRoundRobin(P, quant) {
     let x, y, n; 
 
     let timeStr = "0    ", idStr = "", temp = "";
-
     for (n = -1; !log[LIM];) {
         let found = false;
-
         for (x = 0, y = n + 1; x < LIM; x++) {
             y = (n + 1 + x) % LIM;
             if (P[y].burT > 0 && P[y].arrT <= time) {
