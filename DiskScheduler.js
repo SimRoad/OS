@@ -6,7 +6,7 @@ node DiskScheduler.js
 ----------------------------------
 */
 
-const readline = require("readline");
+const readline = require("readline/promises");
 
 // Create readline interface
 const rl = readline.createInterface({
@@ -23,37 +23,30 @@ let ALPHA;
 
 // Function to initialize the array
 console.log("The previous node is not included")
-function initializeArray() {
-  rl.question(
-    "Enter initial positions (comma or space-separated): ",
-    (input) => {
-      arrPOSITIONS = input
+async function initializeArray() {
+  let input = await rl.question(
+    "Enter initial positions (comma or space-separated): "
+  );
+  arrPOSITIONS = input
         .split(/[\s,]+/) // Split by spaces or commas
         .map((num) => parseInt(num.trim(), 10))
         .filter((num) => !isNaN(num)); // Filter out invalid inputs
 
-      console.log("Initialized array:", arrPOSITIONS);
+    console.log("Initialized array:", arrPOSITIONS);
 
-      rl.question("Previous node: ", (num) => {
-            PREV = parseInt(num);
-            rl.question("Track size: ", (n1) => {
-                    TRACK = parseInt(n1);
-                    rl.question("Seek rate: ", (n2)=>{
-                        SEEK_RATE = parseInt(n2);
-                        rl.question("Alpha: ", (n3)=> {
-                            ALPHA = parseInt(n3);
-                            displayMenu(); 
-                        });
-                    });
-                });
-        }
-      );
-    }
-  );
+    let num = await rl.question("Previous node: ");
+    PREV = parseInt(num);
+    num = await rl.question("Track size: ");
+    TRACK = parseInt(num);
+    num = await rl.question("Seek rate: ");
+    SEEK_RATE = parseInt(num);
+    num = await rl.question("Alpha: ");
+    ALPHA = parseInt(num);
+    displayMenu(); 
 }
 
 // Function to display menu options
-function displayMenu() {
+async function displayMenu() {
     console.log("\n--- Edit ---");
     console.log("[1] Add a position");
     console.log("[2] Delete a position (only the first instance)");
@@ -70,29 +63,30 @@ function displayMenu() {
 
     console.log("\n\n--- Exit ---");
     console.log("[0] Exit");
-    rl.question("Choose an option: ", handleMenuChoice);
+    let num = await rl.question("Choose an option: ");
+    await handleMenuChoice(num);
 }
 
 // Handle user input for menu choice
-function handleMenuChoice(choice) {
+async function handleMenuChoice(choice) {
     switch (choice.trim()) {
         case "1":
-            addNumber(); 
+            await addNumber(); 
         break;
         case "2":
-            deleteNumber(); 
+            await deleteNumber(); 
         break;
         case "3":
-            changePrevNode(); 
+            await changePrevNode(); 
             break;
         case "4":
-            changeTrackSize();
+            await changeTrackSize();
             break;
         case "5":
-            changeSeekRate();
+            await changeSeekRate();
             break;
         case "6":
-            changeAlpha();
+            await changeAlpha();
             break;
         case "7":
             FCFS(arrPOSITIONS); 
@@ -115,87 +109,78 @@ function handleMenuChoice(choice) {
         default:
             console.log("Invalid option. Try again.");
     }
-    
-    if(choice != "0"){
-      setTimeout(() => {
-            console.log("\n\n\n\n\n\n");
-            showArray();
-            displayMenu();
-        }, 5000);
-    }
+    showArray();
+    displayMenu();
 }
 
-function addNumber() {
-  rl.question("Enter a number to add: ", (input) => {
+async function addNumber() {
+  let input = await rl.question("Add a new position: ")
+  const num = parseInt(input, 10);
+  if (!isNaN(num)) {
+    arrPOSITIONS.push(num);
+    console.log(`Added ${num} to the array.`);
+  } else {
+    console.log("Invalid number. Try again.");
+  }
+
+  console.log("\n\n\n\n\n\n");
+}
+
+async function deleteNumber() {
+  let input = await rl.question("Enter a number to delete: ");
+  const num = parseInt(input, 10);
+  
+  if (!isNaN(num)) {
+    const index = arrPOSITIONS.indexOf(num);
+    if (index !== -1) {
+      arrPOSITIONS.splice(index, 1); // Remove the number
+      console.log(`Deleted ${num} from the array.`);
+    } else {
+      console.log(`${num} is not in the array.`);
+    }
+  } else {
+    console.log("Invalid number. Try again.");
+  }
+}
+
+async function changePrevNode() {
+  let input = await rl.question("Enter a new previous node: ")
     const num = parseInt(input, 10);
     if (!isNaN(num)) {
-      arrPOSITIONS.push(num);
-      console.log(`Added ${num} to the array.`);
+      PREV = num;
     } else {
       console.log("Invalid number. Try again.");
     }
-  });
 }
 
-function deleteNumber() {
-  rl.question("Enter a number to delete: ", (input) => {
+async function changeTrackSize() {
+  let input = await rl.question("Enter a new track size: ")
     const num = parseInt(input, 10);
     if (!isNaN(num)) {
-      const index = arrPOSITIONS.indexOf(num);
-      if (index !== -1) {
-        arrPOSITIONS.splice(index, 1); // Remove the number
-        console.log(`Deleted ${num} from the array.`);
-      } else {
-        console.log(`${num} is not in the array.`);
-      }
+      TRACK = num;
     } else {
       console.log("Invalid number. Try again.");
     }
-  });
 }
 
-function changePrevNode() {
-    rl.question("Enter a new previous node: ", (input) => {
-      const num = parseInt(input, 10);
-      if (!isNaN(num)) {
-        PREV = num;
-      } else {
-        console.log("Invalid number. Try again.");
-      }
-    });
+async function changeSeekRate() {
+  let input = await rl.question("Enter a new seek rate: ")
+    const num = parseInt(input, 10);
+    if (!isNaN(num)) {
+      SEEK_RATE = num;
+    } else {
+      console.log("Invalid number. Try again.");
+    }
 }
 
-function changeTrackSize() {
-    rl.question("Enter a new track size: ", (input) => {
-      const num = parseInt(input, 10);
-      if (!isNaN(num)) {
-        TRACK = num;
-      } else {
-        console.log("Invalid number. Try again.");
-      }
-    });
-}
-
-function changeSeekRate() {
-    rl.question("Enter a new seek rate: ", (input) => {
-      const num = parseInt(input, 10);
-      if (!isNaN(num)) {
-        SEEK_RATE = num;
-      } else {
-        console.log("Invalid number. Try again.");
-      }
-    });
-}
-
-function changeAlpha() {
-    rl.question("Enter new alpha: ", (input) => {
-      const num = parseInt(input, 10);
-      if (!isNaN(num)) {
-        ALPHA = num;
-      } else {
-        console.log("Invalid number. Try again.");
-      }
-    });
+async function changeAlpha() {
+  let input = await rl.question("Enter new alpha: ")
+    const num = parseInt(input, 10);
+    if (!isNaN(num)) {
+      ALPHA = num;
+    } else {
+      console.log("Invalid number. Try again.");
+    }
 }
 
 function showArray() {
@@ -237,7 +222,7 @@ function FCFS(P){
     //THM += P[]
 
     console.log("Total Head Movement: " + THM);
-    console.log("Seek Time: " + THM * 5);
+    console.log("Seek Time: " + THM * SEEK_RATE);
     console.log("\n\n");
 }
 
@@ -261,9 +246,9 @@ function cScan(Arr){
     
     END = P.indexOf(Arr[0]);
     THM += headMovement(P[END], a);
-    console.log(headMovement(P[END], a));
+    //console.log(headMovement(P[END], a));
     THM += headMovement(P[END - 1], b);
-    console.log(headMovement(P[END - 1], b));
+    //console.log(headMovement(P[END - 1], b));
     for(x = (END + 1) % LIM; x != END; x = (x + 1) % LIM){
         if(x != 0){
             //console.log(P[x] + '-' + P[x -1]);
@@ -279,7 +264,7 @@ function cScan(Arr){
             pos = pos.padEnd(b, (P[x] < P[x - 1]) ? '<' : '>')
             pos += `${b}`
 
-            // console.log(pos);
+            console.log(pos);
         }
     }
     THM += ALPHA;
