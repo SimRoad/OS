@@ -6,7 +6,7 @@ node PageReplaceInterface.js
 ----------------------------------
 */
 
-const readline = require("readline");
+const readline = require("readline/promises");
 
 // Create readline interface
 const rl = readline.createInterface({
@@ -18,30 +18,25 @@ let PAGES = []; // Array to store PAGES
 let FRAMES;
 
 // Function to initialize the array
-function initializeArray() {
-  rl.question(
-    "Enter initial pages (comma or space-separated): ",
-    (input) => {
-      PAGES = input
+async function initializeArray() {
+  let input = await rl.question(
+    "Enter initial pages (comma or space-separated): ");
+    PAGES = input
         .split(/[\s,]+/) // Split by spaces or commas
         .map((num) => parseInt(num.trim(), 10))
         .filter((num) => !isNaN(num)); // Filter out invalid inputs
 
       console.log("Initialized array:", PAGES);
 
-      rl.question(
-        "How many frames?: ", 
-        (num) => {
-            FRAMES = parseInt(num);
-            displayMenu(); // Proceed to menu
-        }
+      let num = await rl.question(
+        "How many frames?: "
       );
-    }
-  );
+      FRAMES = parseInt(num);
+            displayMenu(); // Proceed to menu
 }
 
 // Function to display menu options
-function displayMenu() {
+async function displayMenu() {
     console.log("\n--- Menu ---");
     console.log("[1] Add a page");
     console.log("[2] Delete a page (only the first instance)");
@@ -51,20 +46,20 @@ function displayMenu() {
     console.log("[6] Optimal");
     console.log("[7] All Algorithms");
     console.log("[0] Exit");
-    rl.question("Choose an option: ", handleMenuChoice);
+    await handleMenuChoice(await rl.question("Choose an option: "));
 }
 
 // Handle user input for menu choice
-function handleMenuChoice(choice) {
+async function handleMenuChoice(choice) {
   switch (choice.trim()) {
     case "1":
-      addNumber(); 
+      await addNumber();
       break;
     case "2":
-      deleteNumber(); 
+      await deleteNumber(); 
       break;
     case "3":
-        changeFrames(); 
+        await changeFrames(); 
         break;
     case "4":
         FIFO(PAGES); 
@@ -88,54 +83,44 @@ function handleMenuChoice(choice) {
     default:
       console.log("Invalid option. Try again.");
     }
-    
-    if(choice != "0"){
-      setTimeout(() => {
-            console.log("\n\n\n\n\n\n");
-            showArray();
-            displayMenu();
-        }, 6000);
-    }
+    displayMenu()
 }
 
-function addNumber() {
-  rl.question("Enter a number to add: ", (input) => {
+async function addNumber() {
+  let input = await rl.question("Enter a number to add: ");
+  const num = parseInt(input, 10);
+  if (!isNaN(num)) {
+    PAGES.push(num);
+    console.log(`Added ${num} to the array.`);
+  } else {
+    console.log("Invalid number. Try again.");
+  }
+}
+
+async function deleteNumber() {
+  let input = await rl.question("Enter a number to delete: ");
+  const num = parseInt(input, 10);
+  if (!isNaN(num)) {
+    const index = PAGES.indexOf(num);
+    if (index !== -1) {
+      PAGES.splice(index, 1); // Remove the number
+      console.log(`Deleted ${num} from the array.`);
+    } else {
+      console.log(`${num} is not in the array.`);
+    }
+  } else {
+    console.log("Invalid number. Try again.");
+  }
+}
+
+async function changeFrames() {
+    let input = await rl.question("Enter a new # of frames: ");
     const num = parseInt(input, 10);
     if (!isNaN(num)) {
-      PAGES.push(num);
-      console.log(`Added ${num} to the array.`);
+      FRAMES = num;
     } else {
       console.log("Invalid number. Try again.");
     }
-  });
-}
-
-function deleteNumber() {
-  rl.question("Enter a number to delete: ", (input) => {
-    const num = parseInt(input, 10);
-    if (!isNaN(num)) {
-      const index = PAGES.indexOf(num);
-      if (index !== -1) {
-        PAGES.splice(index, 1); // Remove the number
-        console.log(`Deleted ${num} from the array.`);
-      } else {
-        console.log(`${num} is not in the array.`);
-      }
-    } else {
-      console.log("Invalid number. Try again.");
-    }
-  });
-}
-
-function changeFrames() {
-    rl.question("Enter a new # of frames: ", (input) => {
-      const num = parseInt(input, 10);
-      if (!isNaN(num)) {
-        FRAMES = num;
-      } else {
-        console.log("Invalid number. Try again.");
-      }
-    });
   }
 
 function showArray() {
