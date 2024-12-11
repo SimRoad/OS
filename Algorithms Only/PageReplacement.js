@@ -10,7 +10,7 @@ LRU(pages);
 let pages2 = [7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7];
 Optimal(pages2);
 
-function display(P, F){
+function displayPages(P, F){
     const LIM = P.length;
     const FRAMES = F.length;
 
@@ -58,7 +58,7 @@ function FIFO(P){
             log[y].push(log[y][x]);
         }
     }
-    display(P, log);
+    displayPages(P, log);
     
     faults = LIM - hits;
     console.log("Page hits: " + hits);
@@ -113,7 +113,7 @@ function LRU(P){
     console.log("Hit Fault = " + `(${faults} / ${LIM}) * 100 = ` + faults/LIM*100 + '%');
 
     //console.log(log)
-    display(P, log);
+    displayPages(P, log);
 }
 
 function Optimal(P){
@@ -156,6 +156,6 @@ function Optimal(P){
     console.log("Hit Fault = " + `(${faults} / ${LIM}) * 100 = ` + faults/LIM*100 + '%');
 
     //console.log(log)
-    display(P, log);
+    displayPages(P, log);
 }
 

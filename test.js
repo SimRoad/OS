@@ -63,8 +63,6 @@ async function interface(P) {
     console.log("[2]: Priority Queue");
     console.log("[3]: Shortest Remaining Time First");
     console.log("[4]: ALL");
-    console.log("[5]: Add Process");
-    console.log("[6]: Delete Process");
     console.log("[9]: End");
 
     const option = parseInt(await askQuestion("Enter option: "));
@@ -83,12 +81,6 @@ async function interface(P) {
             await priority(JSON.parse(JSON.stringify(P)));
             await srtf(JSON.parse(JSON.stringify(P)));
             await round(JSON.parse(JSON.stringify(P)));
-            break;
-        case 5:
-            // Logic for adding a process
-            break;
-        case 6:
-            deleteProcess();
             break;
         case 9:
             console.log("Exiting...");
@@ -116,19 +108,17 @@ function deleteProcess() {
     rl.question('Do you want to delete a process (Y/N)? ', (answer) => {
         if (answer.toUpperCase() === 'Y') {
             rl.question('Enter the ID of the process to delete (A, B, C, etc.): ', (id) => {
-                const index = ready.findIndex(p => p.id === id);
+                const index = ready.findIndex(p => p.id === id.toLocaleUpperCase);
                 if (index !== -1) {
                     ready.splice(index, 1);
                     console.log(`Process ${id} has been deleted.`);
                     display(ready); // Show updated queue after deletion
                 } else {
                     console.log('Process not found.');
+                    id();
                 }
-                rl.close();
             });
-        } else {
-            rl.close();
-        }
+        } 
     });
 }
 
